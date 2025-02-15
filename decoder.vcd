@@ -1,0 +1,386 @@
+$date
+	Tue Feb 11 13:52:18 2025
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module decode_RISCV_C_tb $end
+$var wire 1 ! mem_read_enable $end
+$var wire 1 " mem_write_enable $end
+$var wire 16 # pc_ff [15:0] $end
+$var wire 32 $ src2_data [31:0] $end
+$var wire 32 % src1_data [31:0] $end
+$var wire 5 & rs2_address [4:0] $end
+$var wire 5 ' rs1_address [4:0] $end
+$var wire 1 ( reg_write_enable $end
+$var wire 5 ) rd_address [4:0] $end
+$var wire 16 * jump_add [15:0] $end
+$var wire 1 + is_conditional_jump $end
+$var wire 14 , instruction_decoder [13:0] $end
+$var wire 16 - imm [15:0] $end
+$var wire 16 . alu_result_C [15:0] $end
+$var reg 1 / clk $end
+$var reg 16 0 instruction [15:0] $end
+$var reg 16 1 pc_out [15:0] $end
+$var reg 1 2 reset $end
+$scope module exec_RISCV_C $end
+$var wire 1 / clk $end
+$var wire 16 3 pc_ff [15:0] $end
+$var wire 1 2 reset $end
+$var wire 16 4 src1_data [15:0] $end
+$var wire 16 5 src2_data [15:0] $end
+$var wire 17 6 srai_tmp [16:0] $end
+$var wire 14 7 instruction_decoder_RISCV_C [13:0] $end
+$var wire 16 8 imm [15:0] $end
+$var wire 16 9 alu_result [15:0] $end
+$var wire 17 : alu [16:0] $end
+$var reg 17 ; alu_result_ff [16:0] $end
+$upscope $end
+$scope module regs $end
+$var wire 1 / clk $end
+$var wire 1 2 reset $end
+$var wire 32 < write_data [31:0] $end
+$var wire 5 = reg_addr2 [4:0] $end
+$var wire 5 > reg_addr1 [4:0] $end
+$var wire 32 ? rd2_data [31:0] $end
+$var wire 32 @ rd1_data [31:0] $end
+$var wire 1 ( enable_reg_write $end
+$var wire 5 A addr_write [4:0] $end
+$upscope $end
+$scope module uut $end
+$var wire 1 / clk $end
+$var wire 16 B instruction [15:0] $end
+$var wire 1 ! mem_read_enable $end
+$var wire 1 " mem_write_enable $end
+$var wire 16 C pc_out [15:0] $end
+$var wire 1 ( reg_write_enable $end
+$var wire 1 2 reset $end
+$var wire 16 D src1_data [15:0] $end
+$var wire 16 E src2_data [15:0] $end
+$var wire 5 F rs2_address [4:0] $end
+$var wire 5 G rs2 [4:0] $end
+$var wire 5 H rs1_address [4:0] $end
+$var wire 2 I rfunct2 [1:0] $end
+$var wire 5 J rd_rs1 [4:0] $end
+$var wire 5 K rd_address [4:0] $end
+$var wire 2 L opcode [1:0] $end
+$var wire 16 M jump_add [15:0] $end
+$var wire 14 N instruction_decoder [13:0] $end
+$var wire 16 O imm [15:0] $end
+$var wire 3 P funct3 [2:0] $end
+$var wire 2 Q funct2 [1:0] $end
+$var reg 1 + is_conditional_jump $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b0 Q
+b0 P
+b0 O
+b0 N
+b0 M
+b0 L
+b0 K
+b0 J
+bx I
+b0 H
+b0 G
+b0 F
+b0 E
+b0 D
+b0 C
+b0 B
+b0 A
+b0 @
+b0 ?
+b0 >
+b0 =
+b0 <
+b0 ;
+b0 :
+b0 9
+b0 8
+b0 7
+b0 6
+b0 5
+b0 4
+bz 3
+02
+b0 1
+b0 0
+0/
+b0 .
+b0 -
+b0 ,
+0+
+b0 *
+b0 )
+0(
+b0 '
+b0 &
+b0 %
+b0 $
+bz #
+0"
+0!
+$end
+#10000
+1/
+#20000
+0/
+#30000
+1/
+#40000
+0/
+#50000
+1/
+#60000
+0/
+#70000
+1/
+#80000
+0/
+#90000
+1/
+#100000
+b100 :
+b100 -
+b100 8
+b100 O
+b10100 '
+b10100 >
+b10100 H
+b1 ,
+b1 7
+b1 N
+b10100 J
+b1 L
+b10 Q
+b100 G
+0/
+b101000010001 0
+b101000010001 B
+12
+#110000
+b100 <
+b100 .
+b100 9
+b100 ;
+1/
+#120000
+b11111 6
+b111111111 4
+b111111111 D
+b100 :
+b111111111 %
+b111111111 @
+b100 -
+b100 8
+b100 O
+b100 '
+b100 >
+b100 H
+b100 J
+b1000000 ,
+b1000000 7
+b1000000 N
+b100 P
+0/
+b1000101000010001 0
+b1000101000010001 B
+#130000
+1/
+#140000
+b1111111111111110 *
+b1111111111111110 M
+b0 -
+b0 8
+b0 O
+b0 :
+b0 6
+b0 4
+b0 D
+b0 %
+b0 @
+b0 '
+b0 >
+b0 H
+b10 ,
+b10 7
+b10 N
+b0 J
+b1 P
+b0 Q
+b0 G
+0/
+b10000000000001 0
+b10000000000001 B
+#150000
+b0 <
+b0 .
+b0 9
+1+
+b0 ;
+1/
+#160000
+b0 *
+b0 M
+b100 ,
+b100 7
+b100 N
+b10 P
+0/
+b100000000000001 0
+b100000000000001 B
+#170000
+0+
+1/
+#180000
+b1000 ,
+b1000 7
+b1000 N
+b11 P
+0/
+b110000000000001 0
+b110000000000001 B
+#190000
+1/
+#200000
+b10000 ,
+b10000 7
+b10000 N
+b100 P
+0/
+b1000000000000001 0
+b1000000000000001 B
+#210000
+1/
+#220000
+b100000 ,
+b100000 7
+b100000 N
+b1 Q
+0/
+b1000010000000001 0
+b1000010000000001 B
+#230000
+1/
+#240000
+bx :
+bx 6
+bx 4
+bx D
+bx %
+bx @
+b110 '
+b110 >
+b110 H
+b0 I
+b10000000 ,
+b10000000 7
+b10000000 N
+b110 J
+b11 Q
+0/
+b1000111100000001 0
+b1000111100000001 B
+#250000
+b0xxxxxxxxxxxxxxxx <
+bx .
+bx 9
+bx ;
+1/
+#260000
+b0xxxxxxxxxxxxxxxx :
+b100000000 ,
+b100000000 7
+b100000000 N
+b1 I
+0/
+b1000111100100001 0
+b1000111100100001 B
+#270000
+b0xxxxxxxxxxxxxxxx ;
+1/
+#280000
+b1000000000 ,
+b1000000000 7
+b1000000000 N
+b10 I
+0/
+b1000111101000001 0
+b1000111101000001 B
+#290000
+1/
+#300000
+b0 :
+b10000000000 ,
+b10000000000 7
+b10000000000 N
+b1 '
+b1 >
+b1 H
+b11 I
+b1 J
+0/
+b1000110011100001 0
+b1000110011100001 B
+#310000
+b0 <
+b0 .
+b0 9
+b0 ;
+1/
+#320000
+b0 :
+b0 6
+b0 4
+b0 D
+b1111111111111110 *
+b1111111111111110 M
+b0 %
+b0 @
+b0 '
+b0 >
+b0 H
+b100000000000 ,
+b100000000000 7
+b100000000000 N
+bx I
+b0 J
+b101 P
+b0 Q
+0/
+b1010000000000001 0
+b1010000000000001 B
+#330000
+1+
+1/
+#340000
+b0 *
+b0 M
+b1000000000000 ,
+b1000000000000 7
+b1000000000000 N
+b110 P
+0/
+b1100000000000001 0
+b1100000000000001 B
+#350000
+1/
+#360000
+b10000000000000 ,
+b10000000000000 7
+b10000000000000 N
+b111 P
+0/
+b1110000000000001 0
+b1110000000000001 B
+#370000
+1/
+#380000
+0/
