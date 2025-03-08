@@ -1,0 +1,10 @@
+c.li x1, 0
+c.addi x1, 5
+c.li x2, 2
+c.sub x1, x2
+c.xor x1, x2
+c.or x1, x2
+c.and x1, x2
+c.add x1, x2
+c.swsp x1, 8
+c.lwsp x2, 8

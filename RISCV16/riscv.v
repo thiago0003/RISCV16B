@@ -13,6 +13,15 @@ module riscv(
 		output [15:0] pc_out, 
 		output [15:0] data_memory, alu_result
 	);
+
+	reg rbusy_ff;
+	always @(posedge clk, negedge reset) begin
+		if(reset == 1'b0) 
+			rbusy_ff <= 1'b0;
+		else begin
+			rbusy_ff <= rbusy;
+		end
+	end
 	
 	//------------------------------------------------- FETCH ------------------------------------------------- //
 	wire is_conditional_jump_DEC;
@@ -95,24 +104,18 @@ module riscv(
 
 	//----------------------------------------------- WRITE BACK -------------------------------------------------//
 
-	reg reg_write_enable_ff; 
-	always @(posedge clk or negedge reset) begin
-		if (!reset) begin
-			reg_write_enable_ff <= 1'b0;
-		end else begin
-			reg_write_enable_ff <= reg_write_enable_DEC && !rbusy_ff;
+	reg enable;
+	always @(posedge clk) begin
+		if (!rbusy_ff) begin
+			enable <= 1'b1;
+		end else if(reg_write_enable_DEC) begin
+			enable <= 1'b0;
 		end
-	end
-
-	reg rbusy_ff;
-	always @(posedge clk, negedge reset) begin
-		if(reset == 1'b0) 
-			rbusy_ff <= 1'b0;
 		else begin
-			rbusy_ff <= rbusy;
+			enable <= enable;
 		end
 	end
 
-	assign reg_write_enable = !(reg_write_enable_DEC && !reg_write_enable_ff);
+	assign reg_write_enable = !(reg_write_enable_DEC && !enable);
 	assign data_reg = mem_read_enable_DEC ? load_data_MEM : alu_result;
 endmodule

@@ -26,14 +26,28 @@ module decode_RISCV_C(
     wire [4:0] rs2 = {2'b0, instruction[4:2]}; // For compressed instructions, use rs2
     
     // Immediate value assignment for compressed instructions
-    assign imm = (opcode == 2'b01 && funct3 == 3'b000) ? {{25{instruction[12]}}, instruction[6:2]} : // C.ADDI
-                 (opcode == 2'b01 && funct3 == 3'b011) ? {{25{instruction[12]}}, instruction[6:2]} : // C.LI
-                 (opcode == 2'b01 && funct3 == 3'b010) ? {{14{instruction[12]}}, instruction[6:2], 12'b0} : // C.LUI
-                 (opcode == 2'b01 && funct3 == 3'b100 && funct2 == 2'b00) ? {{25{instruction[12]}}, instruction[6:2]} : // C.SRLI
-                 (opcode == 2'b01 && funct3 == 3'b100 && funct2 == 2'b01) ? {{25{instruction[12]}}, instruction[6:2]} : // C.SRAI
-                 (opcode == 2'b01 && funct3 == 3'b100 && funct2 == 2'b10) ? {{25{instruction[12]}}, instruction[6:2]} : // C.ANDI
-                 (opcode == 2'b01 && funct3 == 3'b001) ? {{20{instruction[12]}}, instruction[8:7], instruction[6:2], 1'b0} : // C.JAL
-                 (opcode == 2'b01 && funct3 == 3'b101) ? {{20{instruction[12]}}, instruction[8:7], instruction[6:2], 1'b0} : // C.J
+    assign imm = (opcode == 2'b01 && funct3 == 3'b000) ? {10'b0, instruction[12], instruction[6:2]} : // C.ADDI
+                 (opcode == 2'b01 && funct3 == 3'b010) ? {11'b0, instruction[12], instruction[6:2]} : // C.LI
+                 (opcode == 2'b01 && funct3 == 3'b011) ? { 9'b0, instruction[12], instruction[6:2], 12'b0} : // C.LUI
+                 (opcode == 2'b01 && funct3 == 3'b100 && funct2 == 2'b00) ? {10'b0, instruction[12], instruction[6:2]} : // C.SRLI
+                 (opcode == 2'b01 && funct3 == 3'b100 && funct2 == 2'b01) ? {10'b0, instruction[12], instruction[6:2]} : // C.SRAI
+                 (opcode == 2'b01 && funct3 == 3'b100 && funct2 == 2'b10) ? {10'b0, instruction[12], instruction[6:2]} : // C.ANDI
+                 
+                
+                // Montagem da instrucao J e JAL de acordo com a Doc 20240411
+                    // imm[11]  = instruction[12]
+                    // imm[10]  = instruction[8]
+                    // imm[9:8] = instruction[10:9]
+                    // imm[7]   = instruction[6]
+                    // imm[6]   = instruction[7]
+                    // imm[5]   = instruction[2]
+                    // imm[4]   = instruction[11]
+                    // imm[3:1] = instruction[5:3]
+                    // imm[0]   = 1'b0
+                 (opcode == 2'b01 && funct3 == 3'b101) || (opcode == 2'b01 && funct3 == 3'b001) ? 
+                    {instruction[12], instruction[8], instruction[10:9], instruction[6], instruction[7], 
+                    instruction[2], instruction[11], instruction[5:3], 1'b0} : // C.J ou C.JAL
+            
                  (opcode == 2'b01 && funct3 == 3'b110) ? {{25{instruction[12]}}, instruction[6:2]} : // C.BEQZ
                  (opcode == 2'b01 && funct3 == 3'b111) ? {{25{instruction[12]}}, instruction[6:2]} : // C.BNEZ
 
@@ -41,15 +55,28 @@ module decode_RISCV_C(
                  (opcode == 2'b10 && funct3 == 3'b100 && instruction[12] == 1'b1 && instruction[6:2] == 5'b00000) ? {{25{instruction[12]}}, instruction[6:2]} : // C.JALR
                  (opcode == 2'b10 && funct3 == 3'b100 && instruction[12] == 1'b1 && instruction[6:2] != 5'b00000) ? {{25{instruction[12]}}, instruction[6:2]} : // C.ADD
 
-                 (opcode == 2'b10 && funct3 == 3'b010 && instruction[11:7] != 5'b00000) ? {{25{instruction[12]}}, instruction[6:2]} : // C.LW
-                 (opcode == 2'b10 && funct3 == 3'b110) ? {{25{instruction[12]}}, instruction[12:7]} : // C.SW
+
+                // Montagem da instrucao LW acordo com a Doc 20240411
+                    // imm[7]   = instruction[3]
+                    // imm[6]   = instruction[2]
+                    // imm[5]   = instruction[12]
+                    // imm[4:2]   = instruction[6:4]
+                    // imm[1:0]   = 2'b0
+                  ((opcode == 2'b10 && funct3 == 3'b010 && instruction[11:7] != 5'b00000) || (opcode == 2'b10 && funct3 == 3'b110)) ? 
+                    {instruction[3], instruction[12], instruction[6:4], 2'b0} : // C.LW
+
+                // Montagem da instrucao SW acordo com a Doc 20240411
+                    // imm[7:6]   = instruction[8:7]
+                    // imm[5:2]   = instruction[12:9]
+                    // imm[1:0]   = 2'b0
+                 (opcode == 2'b10 && funct3 == 3'b110) ? {instruction[8:7], instruction[12:9], 2'b0} : // C.SW
                  32'b0;
 
     // Instruction decoder assignment for compressed instructions
     assign instruction_decoder = {`C_SW, `C_LW, `C_ADD, `C_JALR, `C_SLLI, `C_BNEZ, `C_BEQZ, `C_J, `C_AND, `C_OR, `C_XOR, `C_SUB, `C_ANDI, `C_SRAI, `C_SRLI, `C_LUI, `C_LI, `C_JAL, `C_ADDI};
 
     // Address assignments for compressed instructions
-    assign rs2_address = (funct3 == 3'b100 && funct2 == 2'b11) ? rs2 : 
+    assign rs2_address = (funct3 == 3'b100 && (funct2 == 2'b11 ||  instruction[12] == 1'b1) && (|opcode)) ? rs2 : 
                          (funct3 == 3'b110) ? {2'b0, instruction[6:2]} : 
                          5'b0;
 
@@ -87,10 +114,7 @@ module decode_RISCV_C(
 		if(reset == 1'b0)
 			enable_next_jump_ff <= 1'b0;
 		else begin
-			if(enable_next_jump)
-				enable_next_jump_ff <= enable_next_jump;
-			else
-				enable_next_jump_ff <= 1'b0;
+			enable_next_jump_ff <= enable_next_jump;
 		end
 	end
 

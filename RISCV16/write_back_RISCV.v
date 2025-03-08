@@ -8,7 +8,7 @@ module write_back_RISCV(
 
 	reg reg_write_enable_ff; // Flip-flop para armazenar o sinal
 
-	always @(posedge clk or negedge reset) begin
+	always @(*) begin
 		if (!reset) begin
 			reg_write_enable_ff <= 1'b0; // Reset o flip-flop
 		end else begin

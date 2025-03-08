@@ -15,7 +15,7 @@ module tb_soc;
 
     top soc(
       .clk(clk),
-      .reset(resetn),
+      //.reset(resetn),
       .flashMiso(flashMiso),
 	    .flashMosi(flashMosi),
 	    .flashClk(flashClk),
@@ -62,16 +62,16 @@ module flash_tb(
 
 always @(posedge clk, negedge reset) begin 
   if(reset == 1'b0) begin
-    ram[0] <=  32'h8A110A11; // ANDI (4 e R4) = 0 - ADDI (+4 -> R14) = 04
-    ram[1] <=  32'h8F018F21; // SUB (R6 - R0)  - XOR (R0 com R6)
-    ram[2] <=  32'h8CE18F41; // AND  - OR
-    ram[3] <=  32'h430EC1D2; // LW - SW
+    ram[0] <=  32'h00000000; // 8A110A11 -> ANDI (4 e R4) = 0 - ADDI (+4 -> R14) = 04
+    ram[1] <=  32'h00000000; // 8F018F21 -> SUB (R6 - R0)  - XOR (R0 com R6)
+    ram[2] <=  32'h00000000; // 8CE18F41 -> AND  - OR
+    ram[3] <=  32'h00000000; // 430EC1D2 -> LW - SW
     ram[4] <=  32'h00000000; //
-    ram[5] <=  32'h00000000; //
-    ram[6] <=  32'h00000000;
-    ram[7] <=  32'h00000000;
-    ram[8] <=  32'h00000000;
-    ram[9] <=  32'h00000000;
+    ram[5] <=  32'h00954081; //
+    ram[6] <=  32'h8c894109;
+    ram[7] <=  32'h8cc98ca9;
+    ram[8] <=  32'h908a8ce9;
+    ram[9] <=  32'h4122d006;
     ram[10] <= 32'h00000000;
     ram[11] <= 32'h00000000;
     ram[12] <= 32'h00000000;

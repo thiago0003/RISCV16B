@@ -3,7 +3,7 @@
 `include "RISCV16/defs.vh"
 
 module dma(
-        input         clk, 
+        (* CLOCK_BUFFERED *) input         clk, 
         input         reset,
         input  [15:0] mem_pc, 
         input  [15:0] mem_addr,
