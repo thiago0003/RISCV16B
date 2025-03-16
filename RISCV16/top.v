@@ -16,11 +16,11 @@ module top (
 	output  tx
    );
 
-	wire [15:0]  pc;
+	wire [15:0]  pc, pc_ff;
 	wire [15:0]	 write_reg, src1, src2;
 	wire [15:0]  data_read, write_data, alu_result;
 	wire [15:0]  instruction;
-	wire         mem_write, mem_read, reg_write, rbusy, flash_next_enable;
+	wire         mem_write, mem_read, reg_write, rbusy, receiving_data_spi, flash_next_enable;
 	wire [1:0]   byte_enable;
 	wire [4:0]   RS1, RS2, RD;
 
@@ -39,6 +39,7 @@ module top (
 		.clk(clk),
 		.reset(resetn),
 		.rbusy(rbusy),
+		.receiving_data_spi(receiving_data_spi),
 		.data_read(data_read),
 		.instruction(instruction),
 		.flash_next_enable(flash_next_enable),
@@ -54,6 +55,7 @@ module top (
 		.byte_enable(byte_enable),
 		.addr_RD(RD),
 		.pc_out(pc),
+		.pc_ff(pc_ff),
 		.data_memory(write_data)
 	);
 	
@@ -74,6 +76,7 @@ module top (
 		.clk(clk),
 		.reset(resetn),
 		.mem_pc(pc), 
+		.pc_ff(pc_ff),
 		.mem_addr(alu_result), 
 		.mem_scr(write_data), 
 		.mem_write(mem_write), 
@@ -87,6 +90,7 @@ module top (
 		.spi_miso(flashMiso), 
 		.instruction(instruction), 
 		.SPIFlash_rbusy(rbusy),
+		.receiving_data_spi(receiving_data_spi),
 		.tx(tx)
 	);
 

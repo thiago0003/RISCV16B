@@ -8,3 +8,4 @@ c.and x1, x2
 c.add x1, x2
 c.swsp x1, 8
 c.lwsp x2, 8
+c.jal 8

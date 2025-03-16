@@ -22,9 +22,15 @@ INSTRUCTIONS = {
     'c.swsp':  {'op': 0b10, 'funct3': 0b110},
     'c.lwsp':  {'op': 0b10, 'funct3': 0b010},
 
+    'c.j':     {'op': 0b01, 'funct3': 0b101},
+    'c.jal':     {'op': 0b01, 'funct3': 0b001},
+
+
+
+
     'c.add':   {'op': 0b10, 'funct4': 0b1001},
     'c.mv':    {'op': 0b10, 'funct4': 0b1000},
-    'c.j':     {'op': 0b101, 'funct3': 0b101},
+    
     'c.beqz':  {'op': 0b110, 'funct3': 0b110},
     # Adicione mais instruções aqui
     
@@ -39,25 +45,49 @@ def parse_immediate(imm_str):
 def encode_ci(opcode, funct3, rd, imm):
     """Codifica formato CI (Immediate Arithmetic)"""
     imm = imm & 0b111111 
-    return ((funct3 << 13) |((imm & 0b100000) << 12) | (rd << 7) | ((imm & 0b011111) << 2) | (opcode))
+    return ((funct3 << 13) 
+        |((imm & 0b100000) << 7) 
+        | (rd << 7) 
+        | ((imm & 0b011111) << 2) 
+        | (opcode))
 
 def encode_cr(opcode, funct4, rd, funct2, rs):
     """Codifica formato CR (Register-Register)"""
     return ((funct4 << 10) | (rd << 7) | (funct2 << 5) | (rs << 2) | (opcode))
 
 def encode_add(opcode, funct4, rd, rs):
-    """Codifica formato CR (Register-Register)"""
     return ((funct4 << 12) | (rd << 7) | (rs << 2) | (opcode))
 
 def encode_memory_lw(opcode, funct3, rd, imm):
-    """Codifica formato CI (Immediate Arithmetic)"""
-    print(((imm & 0b011111) << 2) | (opcode))
-    return ((funct3 << 13) | ((imm & 0b100000) << 12) | (rd << 7) | ((imm & 0b011111) << 2) | (opcode))
+    return ((funct3 << 13) 
+        | ((imm & 0b100000) << 7) 
+        | ((rd & 0b11111) << 7) 
+        | ((imm & 0b11100) << 2)
+        | ((imm & 0b11000000) >> 4) 
+        | (opcode))
 
 def encode_memory_sw(opcode, funct3, rd, imm):
-    """Codifica formato CI (Immediate Arithmetic)"""
-    print(((imm & 0b011111) << 2) | (opcode))
+    return ((funct3 << 13) 
+        | ((imm & 0b111100) << 7) 
+        | ((imm & 0b11000000) << 1) 
+        | ((rd & 0b11111) << 2) 
+        | (opcode))
+
+def encode_memory_sw(opcode, funct3, rd, imm):
     return ((funct3 << 13) | ((imm & 0b111100) << 9) | ((imm & 0b11000000) << 7) | ((rd & 0b11111) << 2) | (opcode))
+
+def encode_j_jal(opcode, funct3, imm):
+    return (
+        (funct3 << 13) 
+        | ((imm & 0b100000000000) << 1) 
+        | ((imm & 0b10000) << 7)
+        | ((imm & 0b1100000000) << 1)
+        | ((imm & 0b10000000000) >> 2) 
+        | ((imm & 0b1000000) << 1) 
+        | ((imm & 0b10000000) >> 1) 
+        | ((imm & 0b1110) << 2)
+        | ((imm & 0b100000) >> 3) 
+        | (opcode))
 
 def encode_instruction(instr, operands):
     """Codifica uma instrução completa"""
@@ -108,6 +138,10 @@ def encode_instruction(instr, operands):
         rd = REGISTERS[parts[0]]
         imm = parse_immediate(parts[1])
         return encode_memory_sw(INSTRUCTIONS[instr]['op'], INSTRUCTIONS[instr]['funct3'], rd, imm)
+
+    elif instr == 'c.jal':
+        imm = parse_immediate(parts[0])
+        return encode_j_jal(INSTRUCTIONS[instr]['op'], INSTRUCTIONS[instr]['funct3'], imm)
     
     # Adicionar mais instruções aqui...
     

@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
 module riscv( 
-		input  		  clk, reset, rbusy,
+		input  		  clk, reset, rbusy, receiving_data_spi,
     	input  [15:0] instruction,
         input  [15:0] data_read, 
         input  [15:0] src1_data, src2_data,
@@ -10,7 +10,7 @@ module riscv(
     	output 	      mem_write_enable, mem_read_enable, reg_write_enable, flash_next_enable,
 		output [1:0]  byte_enable,
 		output [4:0]  addr_RD,
-		output [15:0] pc_out, 
+		output [15:0] pc_out, pc_ff,
 		output [15:0] data_memory, alu_result
 	);
 
@@ -32,6 +32,7 @@ module riscv(
 		.reset(reset),
 		.jump_add(jump_add_DEC),
 		.rbusy(rbusy),
+		.receiving_data_spi(receiving_data_spi),
 		.is_conditional_jump(is_conditional_jump_DEC),
 		.enable_pc(flash_next_enable),
 		.pc_out(pc_out),
@@ -48,6 +49,8 @@ module riscv(
 	decode_RISCV_C decode_RISCV_C(
 		.clk(clk),
 		.reset(reset),
+		.rbusy(rbusy),
+		.receiving_data_spi(receiving_data_spi),
 		.instruction(instruction),
 		.imm(imm),
 		.pc_out(pc_out),

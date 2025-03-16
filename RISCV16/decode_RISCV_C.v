@@ -4,7 +4,7 @@
 `include "RISCV16/decoder.vh"
 
 module decode_RISCV_C(
-    input clk, reset,
+    input clk, reset, rbusy, receiving_data_spi,
     input [15:0] instruction, // Compressed instruction is 16 bits
     input [15:0] pc_out, 
     input [15:0] src1_data, src2_data,
@@ -22,7 +22,10 @@ module decode_RISCV_C(
     wire [1:0] funct2 = instruction[11:10];
     wire [1:0] rfunct2 = (funct2 == 2'b11) ? instruction[6:5] : 2'bx;
 
-    wire [4:0] rd_rs1 = (funct3 == 3'b100) ? {2'b0, instruction[9:7]} : instruction[11:7]; // For compressed instructions, use rd/rs1 as rs1
+    wire [4:0] rd_rs1 = (funct3 == 3'b100) ? 
+                            {2'b0, instruction[9:7]} : 
+                            (`C_JAL ? 5'd1 : instruction[11:7]); // For compressed instructions, use rd/rs1 as rs1
+    
     wire [4:0] rs2 = {2'b0, instruction[4:2]}; // For compressed instructions, use rs2
     
     // Immediate value assignment for compressed instructions
@@ -33,7 +36,7 @@ module decode_RISCV_C(
                  (opcode == 2'b01 && funct3 == 3'b100 && funct2 == 2'b01) ? {10'b0, instruction[12], instruction[6:2]} : // C.SRAI
                  (opcode == 2'b01 && funct3 == 3'b100 && funct2 == 2'b10) ? {10'b0, instruction[12], instruction[6:2]} : // C.ANDI
                  
-                
+                 
                 // Montagem da instrucao J e JAL de acordo com a Doc 20240411
                     // imm[11]  = instruction[12]
                     // imm[10]  = instruction[8]
@@ -86,49 +89,16 @@ module decode_RISCV_C(
     // Control signal assignments for compressed instructions
     assign mem_write_enable = `C_SW; 
     assign mem_read_enable = `C_LW; 
-    assign reg_write_enable = !is_conditional_jump && rd_address != 5'b0;
+    assign reg_write_enable = (!is_conditional_jump || `C_JAL || `C_JALR) && rd_address != 5'b0;
 
     // Jump address calculation for compressed instructions
-    wire [15:0] jump_addr = instruction_decoder[`C_J_POS] ? (pc_out - 16'd2) + $signed(imm) :
-                           (instruction_decoder[`C_JAL_POS] && ($signed(src1_data) == $signed(src2_data))) ? (pc_out - 16'd2) + $signed(imm) :
-                           pc_out;
-
+    wire [15:0] jump_addr = !rbusy ? ( 
+                            instruction_decoder[`C_J_POS] ? (pc_out - 16'd2) + $signed(imm) :
+                            instruction_decoder[`C_JAL_POS] ? (pc_out - 16'd2) + $signed(imm) :
+                            pc_out) : pc_out;
 
     wire is_conditional_jump_internal = (`C_J || `C_JAL || `C_BEQZ || `C_BNEZ);
-    assign is_conditional_jump = enable_next_jump;
+    assign is_conditional_jump = !rbusy ? is_conditional_jump_internal : 1'b0;
 
-	reg enable_next_jump;
-	always @(posedge clk, negedge reset) begin
-		if(reset == 1'b0)
-			enable_next_jump <= 1'b0;
-		else begin
-			if(is_conditional_jump_internal && !enable_next_jump)
-				enable_next_jump <= is_conditional_jump_internal;
-			else
-				enable_next_jump <= 1'b0;
-		end
-	end
-
-	reg enable_next_jump_ff;
-	always @(posedge clk, negedge reset) begin
-		if(reset == 1'b0)
-			enable_next_jump_ff <= 1'b0;
-		else begin
-			enable_next_jump_ff <= enable_next_jump;
-		end
-	end
-
-	reg [15:0] jump;
-	always @(posedge clk, negedge reset) begin
-		if(reset == 1'b0)
-			jump <= 16'b0;
-		else
-			if (is_conditional_jump_internal && !enable_next_jump_ff && !enable_next_jump)
-				jump <= jump_addr;
-			else
-				jump <= jump;
-	end
-
-	assign jump_add = jump;
-
+    assign jump_add = is_conditional_jump ? jump_addr : 16'b0;
 endmodule

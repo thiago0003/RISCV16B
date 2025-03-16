@@ -5,7 +5,7 @@ module flash(
     input wire [31:0]  word_address, // address of the word to be read
 
     output wire [31:0] rdata,        // data read
-    output wire        rbusy,        // asserted if busy receiving data			    
+    output wire        rbusy, receiving,        // asserted if busy receiving data			    
 
 		             // SPI flash pins
     output wire        CLK,  // clock
@@ -19,7 +19,7 @@ module flash(
   reg [5:0]  rcv_bitcount;
   reg [31:0] rcv_data;
   wire       sending   = (snd_bitcount != 0) && reset;
-  wire       receiving = (rcv_bitcount != 0) && reset;
+  assign     receiving = (rcv_bitcount != 0) && reset;
   wire       busy = sending | receiving;
   assign     rbusy = !CS_N; 
   

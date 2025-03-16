@@ -26,6 +26,7 @@ module exec_RISCV_C(
 						instruction_decoder_RISCV_C[`C_SRAI_POS]    ? srai_tmp: 
                         instruction_decoder_RISCV_C[`C_SLLI_POS]    ? $signed(src1_data) << $signed(imm[4:0]):
                         instruction_decoder_RISCV_C[`C_JALR_POS]    ? pc_ff + 32'd2:
+						instruction_decoder_RISCV_C[`C_JAL_POS]     ? pc_ff + 32'd2:
                         instruction_decoder_RISCV_C[`C_ADD_POS]     ? $signed(src1_data) + $signed(src2_data):
 						instruction_decoder_RISCV_C[`C_LW_POS]	    ? $signed(src1_data) + $signed(imm):
 						instruction_decoder_RISCV_C[`C_SW_POS]	    ? $signed(src1_data) + $signed(imm):

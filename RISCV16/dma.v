@@ -5,7 +5,7 @@
 module dma(
         (* CLOCK_BUFFERED *) input         clk, 
         input         reset,
-        input  [15:0] mem_pc, 
+        input  [15:0] mem_pc, pc_ff, 
         input  [15:0] mem_addr,
         input  [15:0] mem_scr,
         input         mem_write, mem_read, is_IO_SPI_next,
@@ -17,18 +17,18 @@ module dma(
         output spi_mosi,
 
         output [15:0] instruction,
-        output        SPIFlash_rbusy,
+        output        SPIFlash_rbusy, receiving_data_spi,
         output        tx
 );  
 
     assign data_read = read_data_RAM;  
 
     //------------------------------------- Instruction SPI -------------------------------------------------//
-    
-    wire is_IO_SPI  = reset && is_IO_SPI_next;
+
+    wire is_IO_SPI  = reset ? reset && is_IO_SPI_next : 1'b0;
 
     wire [31:0] instruction_;
-    assign instruction = mem_pc[1] ? instruction_[31:16] : instruction_[15:0];
+    assign instruction = pc_ff[1] ? instruction_[31:16] : instruction_[15:0];
 
     flash flash(
         .clk(clk), 
@@ -40,6 +40,7 @@ module dma(
         .CS_N(spi_cs_n), 
         .word_address({16'd0, mem_pc}), 
         .rbusy(SPIFlash_rbusy), 
+        .receiving(receiving_data_spi),
         .rdata(instruction_)
     );
 
