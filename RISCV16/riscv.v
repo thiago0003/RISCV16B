@@ -108,8 +108,8 @@ module riscv(
 	//----------------------------------------------- WRITE BACK -------------------------------------------------//
 
 	reg enable;
-	always @(posedge clk) begin
-		if (!rbusy_ff) begin
+	always @(*) begin
+		if (!rbusy) begin
 			enable <= 1'b1;
 		end else if(reg_write_enable_DEC) begin
 			enable <= 1'b0;

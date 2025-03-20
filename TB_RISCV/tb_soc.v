@@ -32,14 +32,14 @@ module tb_soc;
       .MOSI(flashMosi)
     );
 
-    // integer i;
+    integer i;
 
     initial begin
         $dumpfile("soc.vcd"); // Define o nome do arquivo VCD
       	$dumpvars(0, tb_soc); // Grava todas as variáveis
         
-        // for(i = 0; i < 32; i++)
-        //    $dumpvars(1, dut.regs.rf[i]);
+        for(i = 0; i < 32; i++)
+          $dumpvars(1, soc.regs.rf[i]);
 
         soc.regs.rf[4] = 16'b111111111;
         soc.regs.rf[20] = 16'b0;
@@ -69,6 +69,8 @@ always @(posedge clk, negedge reset) begin
     ram[4] <=  32'h4122d006; 
     ram[5] <=  32'h00002021; 
     ram[6] <=  32'h00000000;
+    ram[7] <=  32'h00954081;
+    ram[8] <=  32'h00000000;
     ram[9] <=  32'h00000000;
     ram[10] <= 32'h00000000;
     ram[11] <= 32'h00000000;
@@ -88,7 +90,7 @@ always @(posedge clk, negedge reset) begin
     ram[25] <= 32'h00000000;
     ram[26] <= 32'h00000000;
     ram[27] <= 32'h00000000;
-    ram[28] <= 32'h00954081;
+    ram[28] <= 32'h00000000;
     ram[29] <= 32'h00000000;
     ram[30] <= 32'h00000000;
     ram[31] <= 32'h00000000;
