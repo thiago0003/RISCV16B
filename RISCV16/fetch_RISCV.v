@@ -24,7 +24,7 @@ module fetch_RISCV(
         end
     end
 
-	reg [15:0] is_conditional_jump_ff;
+	reg is_conditional_jump_ff;
 	always @(posedge clk, negedge reset)
     begin
         if(reset == 1'b0) begin
@@ -41,19 +41,13 @@ module fetch_RISCV(
     end
 
 	reg [15:0] pc;
-	always @(negedge reset, negedge rbusy, negedge clk) 
+	always @(negedge clk) 
 	begin
-		if (reset == 1'b0) begin
-			pc <= 16'b0;
-		end
-		else if (is_conditional_jump) begin
+		if (is_conditional_jump) begin
 			pc <= jump_add;
 		end
-		else if(!rbusy && !is_conditional_jump) begin
-			pc <= pc_ff + 2'd2;
-		end
 		else begin
-			pc <= pc_ff; 
+			pc <= pc_ff + 2'd2;
 		end
 	end
 
