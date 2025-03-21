@@ -18,16 +18,18 @@ module  blockram
         always @(posedge clk)
         begin		
             if(write_enable) begin
-                if(byte_enable[0]) ram[addr[`BLOCK_RAM_SIZE -1:2]][7:0] 	<= data_in[7:0];
-                if(byte_enable[1]) ram[addr[`BLOCK_RAM_SIZE -1:2]][15:8] 	<= data_in[15:8];
+                if(byte_enable[0]) ram[addr[`BLOCK_RAM_SIZE -1:2]][7:0]  <= data_in[7:0];
+                if(byte_enable[1]) ram[addr[`BLOCK_RAM_SIZE -1:2]][15:8] <= data_in[15:8];
             end
         end
 
         always @(posedge clk, negedge reset) begin
-        if(reset == 1'b0)
-            data <= 16'b0;
-        else
-            data <= ram[addr[`BLOCK_RAM_SIZE -1:2]];
+            if(reset == 1'b0) begin
+                data <= 16'b0;
+            end 
+            else begin
+                data <= ram[addr[`BLOCK_RAM_SIZE -1:2]];
+            end
         end
 
         assign data_out = data;

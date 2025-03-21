@@ -108,14 +108,11 @@ module riscv(
 	//----------------------------------------------- WRITE BACK -------------------------------------------------//
 
 	reg enable;
-	always @(posedge reg_write_enable_DEC, negedge rbusy) begin // TODO melhorar pois reg_write_enable_DEC nao possui sincronismo de clock  
-		if (!rbusy) begin
-			enable <= 1'b1;
-		end else if(reg_write_enable_DEC) begin
+	always @(*) begin
+		enable <= 1'b1;
+		
+		if(reg_write_enable_DEC) begin
 			enable <= 1'b0;
-		end
-		else begin
-			enable <= enable;
 		end
 	end
 

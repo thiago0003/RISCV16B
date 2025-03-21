@@ -41,7 +41,7 @@ module fetch_RISCV(
     end
 
 	reg [15:0] pc;
-	always @(negedge clk) 
+	always @(posedge !clk) 
 	begin
 		if (is_conditional_jump) begin
 			pc <= jump_add;

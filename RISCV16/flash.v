@@ -74,7 +74,6 @@ module flash(
       rcv_bitcount <= 6'd0;
     else begin
       if((sending) && (!rstrb)) begin
-
         if(snd_bitcount == 6'd1)
           rcv_bitcount <= 6'd32;
         else 
